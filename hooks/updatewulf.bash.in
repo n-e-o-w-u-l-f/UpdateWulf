@@ -1,0 +1,75 @@
+# UpdateWulf wrapped cached status pre-prompt for interactive Bash.
+# Never prints into command output or starts an HTTP/Python subprocess.
+case $- in *i*) ;; *) return 0 ;; esac
+[ -n "${BASH_VERSION-}" ] || return 0
+if [ "${UPDATEWULF_PROMPT_HOOK_ACTIVE-}" != 1 ]; then
+  UPDATEWULF_PROMPT_HOOK_ACTIVE=1
+  UPDATEWULF_PROMPT_CACHE_DIR=__STATE_QUOTED__
+  UPDATEWULF_PROMPT_ORIGINAL_PS1=${PS1-}
+  UPDATEWULF_PREVIOUS_DECORATOR=${SHELL_COLOR_PS1_DECORATOR-}
+  UPDATEWULF_LAST_HEADER=''
+
+  _updatewulf_prompt_attach() {
+    local _uw_exit=$? _uw_line='' _uw_owner=${PS1-}
+    local _uw_width=${COLUMNS:-80} _uw_target=22 _uw_stamp='' _uw_now=''
+    # Idempotently replace *only* the UpdateWulf-owned previous line.
+    if [[ -n "$UPDATEWULF_LAST_HEADER" && "$_uw_owner" == "$UPDATEWULF_LAST_HEADER"$'\n'* ]]; then
+      _uw_owner=${_uw_owner#"$UPDATEWULF_LAST_HEADER"$'\n'}
+    fi
+    if [[ -z "$_uw_owner" ]]; then _uw_owner="$UPDATEWULF_PROMPT_ORIGINAL_PS1"; fi
+    case $_uw_width in ''|*[!0-9]*) _uw_width=80 ;; esac
+    if (( _uw_width >= 240 )); then _uw_target=240
+    elif (( _uw_width >= 160 )); then _uw_target=160
+    elif (( _uw_width >= 120 )); then _uw_target=120
+    elif (( _uw_width >= 80 )); then _uw_target=80
+    elif (( _uw_width >= 40 )); then _uw_target=40
+    fi
+    if [[ -r "$UPDATEWULF_PROMPT_CACHE_DIR/fleet-prompt.bash.$_uw_target" ]]; then
+      local _uw_fragment='' _uw_line_count=0
+      # Read every row of the cached status, including wrapped devices.
+      while IFS= read -r _uw_fragment || [[ -n "$_uw_fragment" ]]; do
+        if (( _uw_line_count > 0 )); then _uw_line+=$'\n'; fi
+        _uw_line+="$_uw_fragment"
+        _uw_line_count=$((_uw_line_count+1))
+      done < "$UPDATEWULF_PROMPT_CACHE_DIR/fleet-prompt.bash.$_uw_target"
+    fi
+    if [[ -r "$UPDATEWULF_PROMPT_CACHE_DIR/heartbeat.txt" ]]; then
+      IFS= read -r _uw_stamp < "$UPDATEWULF_PROMPT_CACHE_DIR/heartbeat.txt" || :
+      printf -v _uw_now '%(%s)T' -1
+      if [[ "$_uw_stamp" =~ ^[0-9]+$ ]] && (( _uw_now - _uw_stamp > 180 )); then
+        # A stale *hub cache* cannot prove all devices are offline.
+        _uw_line=''
+      fi
+    fi
+    if [[ -z "$_uw_line" ]]; then
+      _uw_line='[ \[\e[1;38;5;85m\]UpdateWulf\[\e[0m\] \[\e[38;5;39m\]:::\[\e[0m\] Hub [stale] ]'
+    fi
+    UPDATEWULF_LAST_HEADER=$_uw_line
+    PS1="$_uw_line"$'\n'"$_uw_owner"
+    return "$_uw_exit"
+  }
+
+  _updatewulf_prompt_decorate() {
+    if [[ -n "$UPDATEWULF_PREVIOUS_DECORATOR" &&
+          "$UPDATEWULF_PREVIOUS_DECORATOR" != '_updatewulf_prompt_decorate' ]] &&
+       declare -F "$UPDATEWULF_PREVIOUS_DECORATOR" >/dev/null 2>&1; then
+       "$UPDATEWULF_PREVIOUS_DECORATOR"
+    fi
+    _updatewulf_prompt_attach
+  }
+  SHELL_COLOR_PS1_DECORATOR='_updatewulf_prompt_decorate'
+  # Preserve array-valued PROMPT_COMMAND and any other owner hooks.
+  if [[ "$(declare -p PROMPT_COMMAND 2>/dev/null)" == 'declare -a '* ]]; then
+    _uw_found=0
+    for _uw_command in "${PROMPT_COMMAND[@]}"; do
+      [[ "$_uw_command" == *'_updatewulf_prompt_attach'* ]] && _uw_found=1
+    done
+    if [[ $_uw_found == 0 ]]; then PROMPT_COMMAND+=(_updatewulf_prompt_attach); fi
+  else
+    case ${PROMPT_COMMAND:-} in
+      *_updatewulf_prompt_attach*) ;;
+      *) PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND; }_updatewulf_prompt_attach" ;;
+    esac
+  fi
+  unset _uw_command _uw_found
+fi

@@ -1,0 +1,23 @@
+name: UpdateWulf public source tests
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  unit:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Syntax
+        run: python -m py_compile pc_mesh.py update_control.py self_update.py tui.py owner_profiles.py
+      - name: Update announcement
+        run: python test_update_announce.py
+      - name: Portable unit tests
+        run: python -m unittest discover -s tests -v
