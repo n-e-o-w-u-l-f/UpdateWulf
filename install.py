@@ -175,11 +175,32 @@ def main():
     ap.add_argument("--prompt-only",action="store_true")
     args=ap.parse_args()
     source=args.source.resolve(); config=args.config.resolve(); state=args.state.resolve()
+    # Reject incomplete source/config before hooks can change any owner profile.
+    for relative in ("pc_mesh.py", "update_control.py", "apply_updates.py",
+                     "self_update.py", "tui.py", "owner_profiles.py",
+                     "hooks/updatewulf.bash.in"):
+        path = source / relative
+        if not path.is_file():
+            ap.error("incomplete UpdateWulf source: " + relative)
+        try:
+            with path.open("rb") as stream:
+                stream.read(1)
+        except OSError:
+            ap.error("unreadable UpdateWulf source: " + relative)
+    try:
+        (source / "hooks/updatewulf.bash.in").read_text(encoding="utf-8")
+    except (OSError, UnicodeError):
+        ap.error("UpdateWulf Bash prompt hook must be readable UTF-8")
+    if not args.prompt_only:
+        try:
+            configured = json.loads(config.read_text(encoding="utf-8-sig"))
+        except (OSError, UnicodeError, ValueError):
+            ap.error("a readable JSON config must exist before service installation")
+        if not isinstance(configured, dict):
+            ap.error("config must contain a JSON object")
     paths=hooks(source,state,Path.home())
     result={"user_home":str(Path.home()),"profiles":paths,"shell":"CACHED_BASH_PREPROMPT_AND_PASSIVE_OTHERS"}
     if not args.prompt_only:
-        if not config.exists():
-            ap.error("config must exist before service installation")
         state.mkdir(parents=True,exist_ok=True)
         old=read_crontab()
         if old:

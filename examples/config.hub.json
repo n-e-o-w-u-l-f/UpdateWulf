@@ -1,0 +1,28 @@
+{
+  "id": "hub",
+  "hubs": ["https://localhost:9797"],
+  "token": "REPLACE_WITH_HUB_MEMBER_TOKEN",
+  "certificate": "/absolute/path/to/hub.crt",
+  "scan_interval": 1800,
+  "report_interval": 20,
+  "announce_only": true,
+  "machine_control": true,
+  "native_installer": false,
+  "auto_self_update": false,
+  "repositories": [],
+  "hub": {
+    "bind": "127.0.0.1",
+    "port": 9797,
+    "certificate": "/absolute/path/to/hub.crt",
+    "private_key": "/absolute/path/to/hub.key",
+    "read_token": "REPLACE_WITH_READ_ONLY_TOKEN",
+    "operator_token": "REPLACE_WITH_OPERATOR_TOKEN",
+    "allowed_networks": ["127.0.0.0/8"],
+    "offline_after": 150,
+    "stale_after": 5400,
+    "members": [
+      {"id": "hub", "name": "Hub", "hostname": "hub", "token": "REPLACE_WITH_HUB_MEMBER_TOKEN", "allow_install": false},
+      {"id": "workstation", "name": "Workstation", "hostname": "workstation", "token": "REPLACE_WITH_UNIQUE_MEMBER_TOKEN", "allow_install": false}
+    ]
+  }
+}

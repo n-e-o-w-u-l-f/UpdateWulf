@@ -17,3 +17,10 @@ owner host verification of CLI, service and prompt. A successful GitHub
 push is not a deployment receipt. Files under the application release root
 are immutable between updates; old releases can be pruned only under
 self_update.py's strict marker and path gates.
+
+Documentation follows `docs/README_TEMPLATE.md`. Keep the seven root files
+`Readme.md`, `Readme.de.md`, `Readme.fr.md`, `Readme.ru.md`, `Readme.es.md`,
+`Readme.pl.md` and `Readme.pt.md` in the same section order and technical
+scope. Update the handbook, examples, `SUMMARY.md` and verification record
+with relevant source changes. Run `python3 scripts/check_docs.py`; do not
+claim unexecuted native tests, nonexistent release assets or a license.

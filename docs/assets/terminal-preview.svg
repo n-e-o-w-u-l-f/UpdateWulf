@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="350" viewBox="0 0 1120 350" role="img" aria-labelledby="title desc">
+<title id="title">UpdateWulf terminal preview</title>
+<desc id="desc">Illustrative data rendered by the real formatter: laptop has 5 updates and is offline, workstation has 12 updates, and one device has zero pending updates.</desc>
+<rect width="1120" height="350" rx="16" fill="#0b1422"/>
+<rect x="1" y="1" width="1118" height="348" rx="15" fill="none" stroke="#2b3d54"/>
+<text x="42" y="62" fill="#f7fbff" font-family="Arial,sans-serif" font-size="32" font-weight="700">UpdateWulf</text>
+<text x="42" y="91" fill="#9bb2cb" font-family="Arial,sans-serif" font-size="15">UPDATE STATUS • NATIVE PACKAGE MANAGERS • OPERATOR CONTROL</text>
+<rect x="30" y="116" width="1060" height="158" rx="10" fill="#121f30" stroke="#2b3d54"/>
+<circle cx="51" cy="136" r="4" fill="#ff737b"/><circle cx="67" cy="136" r="4" fill="#e9c469"/><circle cx="83" cy="136" r="4" fill="#77f2af"/>
+<text x="1064" y="141" text-anchor="end" fill="#8aa3bf" font-family="Arial,sans-serif" font-size="12">ILLUSTRATIVE DEMO DATA</text>
+<text x="50" y="185" xml:space="preserve" font-family="Consolas,DejaVu Sans Mono,monospace" font-size="15"><tspan fill="#d5e0ed">[ </tspan><tspan fill="#77f2af">UpdateWulf</tspan><tspan fill="#d5e0ed"> </tspan><tspan fill="#5cceff">:::</tspan><tspan fill="#d5e0ed"> </tspan><tspan fill="#f7fbff">laptop</tspan><tspan fill="#d5e0ed"> 5 Update(s) [</tspan><tspan fill="#ff737b">off</tspan><tspan fill="#d5e0ed">] </tspan><tspan fill="#5cceff">:::</tspan><tspan fill="#d5e0ed"> </tspan><tspan fill="#f7fbff">workstation</tspan><tspan fill="#d5e0ed"> 12 Update(s) </tspan><tspan fill="#5cceff">:::</tspan><tspan fill="#d5e0ed"> +1 ]</tspan></text>
+<text x="50" y="223" fill="#77f2af" font-family="Consolas,DejaVu Sans Mono,monospace" font-size="16">$ <tspan fill="#f7fbff">updatewulf status --json</tspan></text>
+<text x="50" y="250" fill="#8aa3bf" font-family="Arial,sans-serif" font-size="13">Read the cached snapshot. Choose when to request scans and package updates.</text>
+<text x="42" y="315" fill="#9bb2cb" font-family="Arial,sans-serif" font-size="14">Python 3.9+  /  CLI + shell status  /  7 README languages</text>
+</svg>

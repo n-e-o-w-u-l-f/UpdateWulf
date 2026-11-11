@@ -1,0 +1,15 @@
+{
+  "id": "workstation",
+  "hubs": ["https://hub.example.invalid:9797"],
+  "token": "REPLACE_WITH_UNIQUE_MEMBER_TOKEN",
+  "certificate": "/absolute/path/to/hub.crt",
+  "scan_interval": 1800,
+  "report_interval": 20,
+  "announce_only": true,
+  "machine_control": true,
+  "native_installer": false,
+  "auto_self_update": false,
+  "self_update_interval": 21600,
+  "self_update_branch": "main",
+  "repositories": []
+}

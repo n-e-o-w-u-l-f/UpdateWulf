@@ -1,35 +1,13 @@
 #!/usr/bin/env bash
+# Deliberately non-destructive: installation ownership differs by platform.
 set -euo pipefail
 
-if [ "$(id -u)" -ne 0 ]; then
-  echo "Run as root." >&2
-  exit 1
+printf '%s\n' \
+  'UpdateWulf does not provide an automatic uninstaller.' \
+  'Follow docs/installation.md#uninstall for the installed user or machine service.' \
+  'No services, files, configuration, credentials or GitSyncWulf data were changed.'
+
+if [ "$#" -eq 1 ] && { [ "$1" = '--help' ] || [ "$1" = '-h' ]; }; then
+  exit 0
 fi
-
-PURGE_CONFIG=0
-PURGE_STATE=0
-for arg in "$@"; do
-  case "$arg" in
-    --purge-config) PURGE_CONFIG=1 ;;
-    --purge-state) PURGE_STATE=1 ;;
-    *) echo "Unknown option: $arg" >&2; exit 2 ;;
-  esac
-done
-
-systemctl disable --now github-sync.timer 2>/dev/null || true
-systemctl stop github-sync.service 2>/dev/null || true
-rm -f /etc/systemd/system/github-sync.service /etc/systemd/system/github-sync.timer
-rm -f /usr/local/bin/github-sync
-rm -rf /usr/local/lib/github-sync
-systemctl daemon-reload
-systemctl reset-failed github-sync.service 2>/dev/null || true
-
-if [ "$PURGE_CONFIG" -eq 1 ]; then
-  rm -rf /etc/github-sync
-fi
-if [ "$PURGE_STATE" -eq 1 ]; then
-  rm -rf /var/lib/github-sync
-fi
-
-# /home/andreas/Projekte is deliberately never removed or modified here.
-echo "UpdateWulf-Service removed. Repository working copies were preserved."
+exit 2

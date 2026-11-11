@@ -1,0 +1,6 @@
+{
+  "id": "workstation",
+  "hubs": ["https://hub.example.invalid:9797"],
+  "token": "REPLACE_WITH_OPERATOR_TOKEN",
+  "certificate": "/absolute/path/to/hub.crt"
+}
