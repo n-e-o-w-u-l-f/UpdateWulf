@@ -18,10 +18,14 @@ class PublicUpdateErrors(unittest.TestCase):
             self.assertEqual(result["detail"], "UW_UPDATE_FAILED")
             queue.jobs[0]["detail"] = "legacy private output"
             queue.jobs[0]["diagnostic"] = "private preview from an old state"
-            saved = queue.snapshot()[0]
-            self.assertEqual(saved["error_code"], "UW_UPDATE_FAILED")
-            self.assertEqual(saved["detail"], "UW_UPDATE_FAILED")
-            self.assertNotIn("diagnostic", saved)
+            batch = [{"target": "member", "action": "install", "request_id": "0" * 24}]
+            for saved in (queue.snapshot()[0],
+                          queue.result("member", job["id"], "FAILED"),
+                          queue.enqueue("operator", "member", "install", "0" * 24),
+                          queue.enqueue_many("operator", batch)[0]):
+                self.assertEqual(saved["error_code"], "UW_UPDATE_FAILED")
+                self.assertEqual(saved["detail"], "UW_UPDATE_FAILED")
+                self.assertNotIn("diagnostic", saved)
 
 
 if __name__ == "__main__":

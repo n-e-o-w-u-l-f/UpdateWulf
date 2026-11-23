@@ -25,6 +25,15 @@ def install_error(action, status):
     return INSTALL_ERRORS.get(status) if action == "install" else None
 
 
+def public_job(job):
+    row = dict(job)
+    code = install_error(row["action"], row["status"])
+    if code:
+        row["detail"] = row["error_code"] = code
+    row.pop("diagnostic", None)
+    return row
+
+
 class ControlQueue:
     def __init__(self, path, members, read_json, save_json):
         self.path, self.members, self.save = Path(path), members, save_json
@@ -53,7 +62,7 @@ class ControlQueue:
             if existing:
                 if (existing["target"], existing["action"], existing["caller"]) != (target, action, caller):
                     raise ValueError("request id already belongs to a different request")
-                return dict(existing)
+                return public_job(existing)
             if any(j["target"] == target and j["status"] not in TERMINAL for j in self.jobs):
                 raise ValueError("this host already has an active request")
             job = {"id": secrets.token_hex(12), "request_id": request_id, "target": target,
@@ -61,7 +70,7 @@ class ControlQueue:
                    "expires_at": time.time() + 600}
             self.jobs.append(job)
             self.persist()
-            return dict(job)
+            return public_job(job)
 
     def enqueue_many(self, caller, requests):
         if not isinstance(requests, list) or not requests or len(requests) > 100:
@@ -112,7 +121,7 @@ class ControlQueue:
             except Exception:
                 self.jobs=before
                 raise
-            return [dict(job) for _,job in results]
+            return [public_job(job) for _,job in results]
 
     def pending(self, member):
         if member not in self.members:
@@ -132,27 +141,19 @@ class ControlQueue:
             if not job:
                 raise PermissionError("request does not belong to this host")
             if job["status"] in TERMINAL:
-                return dict(job)
+                return public_job(job)
             if status == "RUNNING" and job["status"] != "QUEUED":
-                return dict(job, claimed=False)
+                return dict(public_job(job), claimed=False)
             code = install_error(job["action"], status)
             if code:
                 detail = job["error_code"] = code
             job.update(status=status, detail=re.sub(r"[\x00-\x1f\x7f]", " ", str(detail))[:350], updated_at=time.time())
             self.persist()
-            return dict(job, claimed=status == "RUNNING")
+            return dict(public_job(job), claimed=status == "RUNNING")
 
     def snapshot(self):
         with self.guard:
-            rows = []
-            for job in self.jobs[-100:]:
-                row = dict(job)
-                code = install_error(row["action"], row["status"])
-                if code:
-                    row["detail"] = row["error_code"] = code
-                row.pop("diagnostic", None)
-                rows.append(row)
-            return rows
+            return [public_job(job) for job in self.jobs[-100:]]
 
 
 def can_install():
