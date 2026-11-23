@@ -177,3 +177,15 @@ The seven READMEs contain equivalent localized introductions and operational ove
 Open an [issue](https://github.com/n-e-o-w-u-l-f/UpdateWulf/issues) with the OS/version, Python version, UpdateWulf source commit, installation scope, exact command, expected outcome, observed result and relevant sanitized log excerpt. State whether the result comes from a real native run, an automated test or source inspection. Include the selected state path in redacted form if a cache mismatch is involved.
 
 Do not attach live credentials or complete private configuration. Keep a failed installation's source and backups available locally until the cause is understood. For an unfinished package update, report the native updater's actual state before attempting another request.
+
+## Stable installation error codes
+
+| Code | Meaning |
+| --- | --- |
+| UW_UPDATE_FAILED | The native installer reported a failure. Inspect its local log. |
+| UW_NEEDS_ADMIN | The native administrator or owner installer is unavailable to the worker. |
+| UW_REQUEST_EXPIRED | The device did not claim the request before it expired. |
+| UW_UPDATE_INTERRUPTED | The worker stopped during the request. Check native state before retrying. |
+
+Fleet results return these codes. The full native installer output is kept in
+the local installation log on the affected device.

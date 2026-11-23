@@ -13,6 +13,16 @@ from pathlib import Path
 ACTIONS = {"refresh", "sync", "install"}
 TERMINAL = {"SUCCEEDED", "FAILED", "NEEDS_ADMIN", "EXPIRED", "INTERRUPTED"}
 ID = re.compile(r"^[a-f0-9]{24}$")
+INSTALL_ERRORS = {
+    "FAILED": "UW_UPDATE_FAILED",
+    "NEEDS_ADMIN": "UW_NEEDS_ADMIN",
+    "EXPIRED": "UW_REQUEST_EXPIRED",
+    "INTERRUPTED": "UW_UPDATE_INTERRUPTED",
+}
+
+
+def install_error(action, status):
+    return INSTALL_ERRORS.get(status) if action == "install" else None
 
 
 class ControlQueue:
@@ -125,13 +135,24 @@ class ControlQueue:
                 return dict(job)
             if status == "RUNNING" and job["status"] != "QUEUED":
                 return dict(job, claimed=False)
+            code = install_error(job["action"], status)
+            if code:
+                detail = job["error_code"] = code
             job.update(status=status, detail=re.sub(r"[\x00-\x1f\x7f]", " ", str(detail))[:350], updated_at=time.time())
             self.persist()
             return dict(job, claimed=status == "RUNNING")
 
     def snapshot(self):
         with self.guard:
-            return [dict(j) for j in self.jobs[-100:]]
+            rows = []
+            for job in self.jobs[-100:]:
+                row = dict(job)
+                code = install_error(row["action"], row["status"])
+                if code:
+                    row["detail"] = row["error_code"] = code
+                row.pop("diagnostic", None)
+                rows.append(row)
+            return rows
 
 
 def can_install():
@@ -196,7 +217,8 @@ def worker(client, state, stopping, refresh, sync, install, read_json, save_json
         try:
             for job_id, entry in list(completed.items()):
                 if not entry.get("acknowledged") and entry["status"] in TERMINAL:
-                    client.request("/command-result", {"id": job_id, "status": entry["status"], "detail": entry.get("detail", "")})
+                    detail = install_error(entry.get("action"), entry["status"]) or entry.get("detail", "")
+                    client.request("/command-result", {"id": job_id, "status": entry["status"], "detail": detail})
                     entry["acknowledged"] = True
                     save_json(path, completed, True)
             for job in client.request("/commands").get("commands", []):
@@ -235,7 +257,8 @@ def worker(client, state, stopping, refresh, sync, install, read_json, save_json
                 for k in acknowledged[:-100]:
                     completed.pop(k)
                 save_json(path, completed, True)
-                client.request("/command-result", {"id": job_id, "status": status, "detail": detail})
+                public_detail = install_error(job["action"], status) or detail
+                client.request("/command-result", {"id": job_id, "status": status, "detail": public_detail})
                 completed[job_id]["acknowledged"] = True
                 save_json(path, completed, True)
         except Exception as e:
