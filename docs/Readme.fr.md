@@ -6,13 +6,13 @@
 
 **Consultez les mises à jour disponibles sur vos ordinateurs. Lancez les mises à jour natives des paquets quand vous le décidez.**
 
-[Télécharger](#download) · [Premiers pas](#quick-start) · [Installer](#installation) · [Manuel](docs/manual.md) · [Dépannage](docs/troubleshooting.md)
+[Télécharger](#download) · [Premiers pas](#quick-start) · [Installer](#installation) · [Manuel](manual.md) · [Dépannage](troubleshooting.md)
 
-[English](Readme.md) · [Deutsch](Readme.de.md) · **Français** · [Русский](Readme.ru.md) · [Español](Readme.es.md) · [Polski](Readme.pl.md) · [Português](Readme.pt.md)
+[English](../Readme.md) · [Deutsch](Readme.de.md) · **Français** · [Русский](Readme.ru.md) · [Español](Readme.es.md) · [Polski](Readme.pl.md) · [Português](Readme.pt.md)
 
 </div>
 
-![Aperçu du terminal UpdateWulf avec des données fictives](docs/assets/terminal-preview.svg)
+![Aperçu du terminal UpdateWulf avec des données fictives](assets/terminal-preview.svg)
 
 ---
 
@@ -26,7 +26,7 @@
 
 UpdateWulf est un service Python et un outil en ligne de commande destiné à un petit parc d'ordinateurs de confiance. Un hub HTTPS reçoit les rapports de mises à jour ; chaque ordinateur inscrit exécute un processus de travail. L'intégration au shell affiche les résultats mis en cache sans contacter le réseau à chaque invite de commande.
 
-Le code public indique actuellement la **version 2.1.0**. Il comprend des adaptateurs pour **APT, pacman, NetBSD pkgin et Windows Update Agent**. La couverture des adaptateurs et des tests natifs varie selon la plateforme ; consultez les [prérequis](#requirements) et le [compte rendu de vérification](docs/documentation-status.md). Les sept traductions du README ne signifient **pas** que l'interface du programme est entièrement traduite en sept langues : certains messages restent en allemand.
+Le code public indique actuellement la **version 2.1.0**. Il comprend des adaptateurs pour **APT, pacman, NetBSD pkgin et Windows Update Agent**. La couverture des adaptateurs et des tests natifs varie selon la plateforme ; consultez les [prérequis](#requirements) et le [compte rendu de vérification](documentation-status.md). Les sept traductions du README ne signifient **pas** que l'interface du programme est entièrement traduite en sept langues : certains messages restent en allemand.
 
 ### Cas d'utilisation
 
@@ -100,7 +100,7 @@ Au point de référence de cette documentation, aucun fichier de version étique
 | D'un processus qui démarre avec l'ordinateur et peut exécuter les mises à jour autorisées du système | Service système | Un service ou une tâche natifs, un utilitaire protégé de mise à jour des paquets et une configuration explicite du propriétaire. |
 | De découvrir l'outil | Copie du code source | Exécutez `pc_mesh.py --help` / `--version` ; aucune installation n'est nécessaire. |
 
-**Configurez d'abord l'inscription :** suivez la [configuration du hub et des membres](docs/configuration.md#first-setup). Les fichiers dans [examples/](examples/) contiennent des valeurs à remplacer, pas des identifiants utilisables. Conservez votre configuration complétée en dehors de l'arborescence du code, normalement dans `~/.config/pc-mesh/config.json` (`%USERPROFILE%\.config\pc-mesh\config.json` sous Windows). Gardez le répertoire téléchargé du programme à un emplacement permanent : les installateurs y font référence.
+**Configurez d'abord l'inscription :** suivez la [configuration du hub et des membres](configuration.md#first-setup). Les fichiers dans [examples/](../examples/) contiennent des valeurs à remplacer, pas des identifiants utilisables. Conservez votre configuration complétée en dehors de l'arborescence du code, normalement dans `~/.config/pc-mesh/config.json` (`%USERPROFILE%\.config\pc-mesh\config.json` sous Windows). Gardez le répertoire téléchargé du programme à un emplacement permanent : les installateurs y font référence.
 
 ### Installer pour votre utilisateur
 
@@ -120,15 +120,15 @@ $Python = (Get-Command python.exe -ErrorAction Stop).Source
 
 Pour installer uniquement l'intégration au shell, utilisez `python3 install.py --prompt-only` ou `.\install_windows.ps1 -Python $Python -PromptOnly`. Cette option ne collecte pas de nouvel état : elle nécessite le cache d'un processus de travail existant. Sous Termux, exécutez `python install_termux.py` dans la session Termux réelle. La mise à jour de l'application sous Termux nécessite actuellement un remplacement manuel adapté à cette plateforme ; conservez `auto_self_update: false`, car le mécanisme général ne met pas à jour son script de démarrage.
 
-Ouvrez un nouveau terminal et exécutez `updatewulf --version`, `updatewulf diagnose` et `updatewulf status`. Le [guide d'installation](docs/installation.md) explique les chemins, le démarrage, la vérification et le retour à la version précédente.
+Ouvrez un nouveau terminal et exécutez `updatewulf --version`, `updatewulf diagnose` et `updatewulf status`. Le [guide d'installation](installation.md) explique les chemins, le démarrage, la vérification et le retour à la version précédente.
 
 ### Installer pour tout le système
 
 L'installation système fournit un processus de travail natif et des droits contrôlés de mise à jour des paquets ; elle ne configure pas automatiquement le shell de chaque utilisateur. Préparez d'abord un compte de service dédié et sa configuration inscrite. Utilisez un emplacement permanent du code contrôlé par un administrateur et suivez la procédure de bascule propre à la plateforme :
 
-- [Linux / systemd](docs/installation.md#linux-systemwide) : `enable_machine_updates.py --user … --config … --state … --source …`, depuis une véritable session root.
-- [Windows](docs/installation.md#windows-systemwide) : `enable_machine_updates_windows.ps1 -Python … -Config … -Owner …`, depuis une console du propriétaire avec privilèges élevés.
-- [NetBSD](docs/installation.md#netbsd-systemwide) : `enable_machine_updates_netbsd.py --config … --state … --python …`, depuis une véritable session root.
+- [Linux / systemd](installation.md#linux-systemwide) : `enable_machine_updates.py --user … --config … --state … --source …`, depuis une véritable session root.
+- [Windows](installation.md#windows-systemwide) : `enable_machine_updates_windows.ps1 -Python … -Config … -Owner …`, depuis une console du propriétaire avec privilèges élevés.
+- [NetBSD](installation.md#netbsd-systemwide) : `enable_machine_updates_netbsd.py --config … --state … --python …`, depuis une véritable session root.
 
 Ces installateurs n'élèvent pas leurs propres privilèges. Une installation gérée par un service système utilise sa procédure native de bascule de version, pas l'installateur de mise à jour utilisateur.
 
@@ -152,13 +152,13 @@ Remplacez `workstation.local` par un nom d'hôte signalé ou inscrit, ou utilise
 | Vérifier UpdateWulf lui-même | `updatewulf --self update --check` | Consulte la branche publique de l'application. |
 | Mettre à jour UpdateWulf lui-même | `updatewulf --self update` | Prépare, vérifie et active le code de l'application pour une installation utilisateur prise en charge. |
 
-`updatewulf all update` demande des mises à jour pour **toutes les cibles inscrites**. Utilisez cette commande uniquement si telle est la portée voulue. L'expiration du délai d'attente de la CLI n'annule pas un gestionnaire de paquets déjà lancé. La référence complète des actions, des options et des codes de retour figure dans le [manuel](docs/manual.md).
+`updatewulf all update` demande des mises à jour pour **toutes les cibles inscrites**. Utilisez cette commande uniquement si telle est la portée voulue. L'expiration du délai d'attente de la CLI n'annule pas un gestionnaire de paquets déjà lancé. La référence complète des actions, des options et des codes de retour figure dans le [manuel](manual.md).
 
 <a id="configuration"></a>
 
 ## Configuration
 
-La configuration est au format JSON. Commencez par un exemple de [client](examples/config.client.json), de [hub](examples/config.hub.json) ou d'[opérateur](examples/control.json), puis suivez la [référence complète de configuration](docs/configuration.md). Les chemins JSON sont littéraux : utilisez des chemins absolus ; `~` et les variables d'environnement ne sont généralement pas développés dans les chaînes JSON.
+La configuration est au format JSON. Commencez par un exemple de [client](../examples/config.client.json), de [hub](../examples/config.hub.json) ou d'[opérateur](../examples/control.json), puis suivez la [référence complète de configuration](configuration.md). Les chemins JSON sont littéraux : utilisez des chemins absolus ; `~` et les variables d'environnement ne sont généralement pas développés dans les chaînes JSON.
 
 | Paramètre | Valeur par défaut dans le code | Signification |
 | :--- | :--- | :--- |
@@ -171,25 +171,25 @@ La configuration est au format JSON. Commencez par un exemple de [client](exampl
 | `machine_control` | `false` | Active les demandes d'analyse et d'installation en mode annonce seule. |
 | `native_installer` | `false` | Transmet les installations à un utilitaire natif préalablement configuré. |
 
-Les exemples définissent volontairement `auto_self_update: false` afin de rendre la première configuration prévisible. Activez cette fonction après avoir vérifié une installation utilisateur publique. Pour les commandes de l'opérateur, `control.json` à l'emplacement par défaut a priorité sur `config.json` ; un `--config` explicite avec un autre chemin sélectionne ce fichier. Les chemins personnalisés de configuration et d'état présentent des limites lors de la mise à jour de l'application, décrites dans les [problèmes connus](docs/troubleshooting.md#known-issues).
+Les exemples définissent volontairement `auto_self_update: false` afin de rendre la première configuration prévisible. Activez cette fonction après avoir vérifié une installation utilisateur publique. Pour les commandes de l'opérateur, `control.json` à l'emplacement par défaut a priorité sur `config.json` ; un `--config` explicite avec un autre chemin sélectionne ce fichier. Les chemins personnalisés de configuration et d'état présentent des limites lors de la mise à jour de l'application, décrites dans les [problèmes connus](troubleshooting.md#known-issues).
 
 <a id="services-status-and-self-update"></a>
 
 ## Services, état et mise à jour de l'application
 
-Le service utilisateur s'appelle `updatewulf.service` sous systemd ou `UpdateWulf-User` dans le Planificateur de tâches Windows. Les noms des services système diffèrent ; le [guide d'installation](docs/installation.md) les répertorie. Les journaux et instantanés sont normalement stockés dans `~/.local/state/pc-mesh/`, notamment `service.log`, `heartbeat.json`, `fleet.json` et `executed-commands.json`.
+Le service utilisateur s'appelle `updatewulf.service` sous systemd ou `UpdateWulf-User` dans le Planificateur de tâches Windows. Les noms des services système diffèrent ; le [guide d'installation](installation.md) les répertorie. Les journaux et instantanés sont normalement stockés dans `~/.local/state/pc-mesh/`, notamment `service.log`, `heartbeat.json`, `fleet.json` et `executed-commands.json`.
 
 L'état peut être `OK`, `CACHED`, `CHECKING`, `UNKNOWN`, `ERROR` ou `UNSUPPORTED`. Les données en cache et celles des appareils hors ligne restent visibles sans être présentées comme une nouvelle analyse réussie. Les tâches ont leurs propres états, notamment `QUEUED`, `RUNNING`, `SUCCEEDED`, `FAILED`, `NEEDS_ADMIN`, `EXPIRED` et `INTERRUPTED`.
 
-La mise à jour de l'application vérifie l'identité du dépôt, l'intégrité et l'ascendance des objets Git, exécute les vérifications sur la version préparée et conserve la version actuelle ainsi que la précédente. La vérification Git n'est pas un mécanisme de signature des versions. La première migration nécessite une commande explicite de l'opérateur. La configuration existante et les données d'inscription restent en dehors du répertoire de version. Le retour à une version précédente et les limites prudentes du nettoyage sont expliqués dans le [manuel](docs/manual.md#application-self-update).
+La mise à jour de l'application vérifie l'identité du dépôt, l'intégrité et l'ascendance des objets Git, exécute les vérifications sur la version préparée et conserve la version actuelle ainsi que la précédente. La vérification Git n'est pas un mécanisme de signature des versions. La première migration nécessite une commande explicite de l'opérateur. La configuration existante et les données d'inscription restent en dehors du répertoire de version. Le retour à une version précédente et les limites prudentes du nettoyage sont expliqués dans le [manuel](manual.md#application-self-update).
 
 <a id="known-issues-and-troubleshooting"></a>
 
 ## Problèmes connus et dépannage
 
-Le [guide de dépannage](docs/troubleshooting.md#known-issues) décrit les limites concrètes et leurs solutions de contournement. Actuellement :
+Le [guide de dépannage](troubleshooting.md#known-issues) décrit les limites concrètes et leurs solutions de contournement. Actuellement :
 
-- Aucun désinstallateur multiplateforme complet ; suivez la [procédure de suppression manuelle](docs/installation.md#uninstall).
+- Aucun désinstallateur multiplateforme complet ; suivez la [procédure de suppression manuelle](installation.md#uninstall).
 - La mise à jour utilisateur ne conserve pas de manière fiable les chemins personnalisés d'état et de configuration sous Unix ; utilisez les chemins par défaut ou une bascule native manuelle.
 - La TUI peut échouer lors de la navigation dans un parc vide ; utilisez `status` et `diagnose` jusqu'à l'inscription d'un membre.
 - L'intégration de l'invite Bash ne respecte pas entièrement `NO_COLOR` ; utilisez `status --no-color` pour garantir une sortie CLI sans couleurs.
@@ -204,17 +204,17 @@ Si une commande est introuvable, ouvrez un nouveau shell et vérifiez le répert
 
 | Documentation | Contenu |
 | :--- | :--- |
-| [Installation](docs/installation.md) | Configuration utilisateur/système, services, vérification, retour à la version précédente et désinstallation. |
-| [Manuel](docs/manual.md) | Toutes les actions et options de la CLI, exemples, états, journaux et mise à jour de l'application. |
-| [Configuration](docs/configuration.md) | Configuration du hub, des membres et des opérateurs, clés, valeurs par défaut, chemins et priorités. |
-| [Dépannage](docs/troubleshooting.md) | Symptômes, bogues connus, solutions pratiques et FAQ. |
-| [Vérification](docs/documentation-status.md) | Ce qui a été vérifié et ce qui nécessite encore un test natif sur la plateforme. |
-| [Modèle README](docs/README_TEMPLATE.md) | Structure de présentation réutilisable pour les projets en sept langues. |
-| [Recherche de conception](docs/readme-design-research.md) | Dix README de référence issus de sources primaires et les choix de présentation retenus. |
+| [Installation](installation.md) | Configuration utilisateur/système, services, vérification, retour à la version précédente et désinstallation. |
+| [Manuel](manual.md) | Toutes les actions et options de la CLI, exemples, états, journaux et mise à jour de l'application. |
+| [Configuration](configuration.md) | Configuration du hub, des membres et des opérateurs, clés, valeurs par défaut, chemins et priorités. |
+| [Dépannage](troubleshooting.md) | Symptômes, bogues connus, solutions pratiques et FAQ. |
+| [Vérification](documentation-status.md) | Ce qui a été vérifié et ce qui nécessite encore un test natif sur la plateforme. |
+| [Modèle README](README_TEMPLATE.md) | Structure de présentation réutilisable pour les projets en sept langues. |
+| [Recherche de conception](readme-design-research.md) | Dix README de référence issus de sources primaires et les choix de présentation retenus. |
 
 Le manuel technique détaillé est actuellement maintenu en anglais ; chacun des sept README fournit les mêmes premiers pas et la même vue d'ensemble du fonctionnement dans sa langue.
 
-**Contribuer / obtenir de l'aide :** [ouvrez une issue](https://github.com/n-e-o-w-u-l-f/UpdateWulf/issues) en indiquant le système d'exploitation, la version de Python, le commit UpdateWulf, la commande exacte et une sortie expurgée des informations sensibles. Ne joignez jamais de jetons, de clés privées ni de fichiers de configuration réels. Consultez les [vérifications pour contribuer](docs/manual.md#contributing).
+**Contribuer / obtenir de l'aide :** [ouvrez une issue](https://github.com/n-e-o-w-u-l-f/UpdateWulf/issues) en indiquant le système d'exploitation, la version de Python, le commit UpdateWulf, la commande exacte et une sortie expurgée des informations sensibles. Ne joignez jamais de jetons, de clés privées ni de fichiers de configuration réels. Consultez les [vérifications pour contribuer](manual.md#contributing).
 
 **Licence :** le dépôt ne contient actuellement aucun fichier de licence. Cette documentation ne choisit ni n'accorde de licence ; demandez au responsable du projet quelles réutilisations sont autorisées.
 
@@ -222,6 +222,6 @@ Le manuel technique détaillé est actuellement maintenu en anglais ; chacun des
 
 <div align="center">
 
-[Retour en haut](#updatewulf) · [Télécharger le code source](https://github.com/n-e-o-w-u-l-f/UpdateWulf/archive/refs/heads/main.zip) · [Lire le manuel](docs/manual.md)
+[Retour en haut](#updatewulf) · [Télécharger le code source](https://github.com/n-e-o-w-u-l-f/UpdateWulf/archive/refs/heads/main.zip) · [Lire le manuel](manual.md)
 
 </div>

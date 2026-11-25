@@ -21,8 +21,8 @@ from urllib.parse import unquote, urlsplit
 
 
 README_FILES = (
-    "Readme.md", "Readme.de.md", "Readme.fr.md", "Readme.ru.md",
-    "Readme.es.md", "Readme.pl.md", "Readme.pt.md",
+    "Readme.md", "docs/Readme.de.md", "docs/Readme.fr.md", "docs/Readme.ru.md",
+    "docs/Readme.es.md", "docs/Readme.pl.md", "docs/Readme.pt.md",
 )
 REQUIRED_DOCS = (
     *README_FILES, "SUMMARY.md", "docs/manual.md", "docs/installation.md",
@@ -219,10 +219,15 @@ def validate(root: Path) -> int:
     for relative in (*REQUIRED_DOCS, *REQUIRED_EXAMPLES):
         if not exact_path(root, Path(relative)) or not (root / relative).is_file():
             errors.append(f"missing required file or incorrect filename case: {relative}")
-    for expected in README_FILES:
-        for entry in root.iterdir():
-            if entry.name.casefold() == expected.casefold() and entry.name != expected:
-                errors.append(f"README filename must be exactly {expected}, found {entry.name}")
+    readmes_by_name = {Path(relative).name.casefold(): relative for relative in README_FILES}
+    for directory in (root, root / "docs"):
+        if not directory.is_dir():
+            continue
+        for entry in directory.iterdir():
+            expected = readmes_by_name.get(entry.name.casefold())
+            actual = entry.relative_to(root).as_posix()
+            if expected is not None and actual != expected:
+                errors.append(f"README path must be exactly {expected}, found {actual}")
 
     paths = {path for path in root.iterdir()
              if path.is_file() and path.name.lower().startswith("readme") and path.suffix.lower() == ".md"}
@@ -246,6 +251,8 @@ def validate(root: Path) -> int:
     for path, document in documents.items():
         relative = path.relative_to(root).as_posix()
         language_links: set[str] = set()
+        header_end = next((number for number, text in enumerate(document.text.splitlines(), 1)
+                           if text.startswith("## ")), sys.maxsize)
         for target, line in document.links:
             try:
                 parsed = urlsplit(target)
@@ -265,12 +272,13 @@ def validate(root: Path) -> int:
             if not destination.is_relative_to(root) or not destination.resolve().is_relative_to(root):
                 errors.append(f"{relative}:{line}: link leaves the repository: {target}")
                 continue
-            if not exact_path(root, destination.relative_to(root)):
+            linked_path = destination.relative_to(root)
+            if not exact_path(root, linked_path):
                 errors.append(f"{relative}:{line}: missing local link or incorrect case: {target}")
                 continue
             checked_links += 1
-            if destination.parent == root and destination.name in README_FILES:
-                language_links.add(destination.name)
+            if line < header_end and linked_path.as_posix() in README_FILES:
+                language_links.add(linked_path.as_posix())
             if fragment and destination.suffix.lower() == ".md":
                 linked = documents.get(destination)
                 if linked is None:
@@ -281,8 +289,8 @@ def validate(root: Path) -> int:
                         continue
                 if fragment not in linked.anchors:
                     errors.append(f"{relative}:{line}: missing fragment anchor: {target}")
-        if path.parent == root and path.name in README_FILES:
-            for missing in sorted(set(README_FILES) - language_links):
+        if relative in README_FILES:
+            for missing in sorted(set(README_FILES) - language_links - {relative}):
                 errors.append(f"{relative}: missing language-selector link to {missing}")
 
     examples = sorted((root / "examples").glob("*.json"))

@@ -11,10 +11,10 @@ from the ten first-party references documented in `readme-design-research.md`.
    placeholder with verified project information. Placeholder commands are text,
    not executable instructions. Use the correct shell language once commands are
    real and checked.
-2. Keep exactly these root entry filenames: `Readme.md` (English), `Readme.de.md`
-   (German), `Readme.fr.md` (French), `Readme.ru.md` (Russian), `Readme.es.md`
-   (Spanish), `Readme.pl.md` (Polish) and `Readme.pt.md` (Portuguese). Avoid a second
-   English entry point differing only by case.
+2. Keep `Readme.md` (English) at the root. Place `Readme.de.md` (German),
+   `Readme.fr.md` (French), `Readme.ru.md` (Russian), `Readme.es.md` (Spanish),
+   `Readme.pl.md` (Polish) and `Readme.pt.md` (Portuguese) under `docs/`.
+   Use the exact filename case.
 3. Preserve the native-language selector in every translation. Translate all
    user-facing explanations, section names and example comments. Keep actual
    commands, option names, configuration keys and paths unchanged.
@@ -22,9 +22,10 @@ from the ten first-party references documented in `readme-design-research.md`.
    The language of linked reference pages must be stated where it differs from
    the README. Record the reviewed source revision and translation status in a
    documentation-status file.
-5. Use repository-relative links. The scaffold assumes it will live at the root;
-   its `docs/` links must point to real pages. When adding or renaming a page,
-   update navigation and check links and anchors with case sensitivity.
+5. Use repository-relative links. The root scaffold links to pages under `docs/`.
+   In a translation, link to the English entry using `../Readme.md`, other
+   translations by filename and the handbook pages relative to `docs/`. Check
+   navigation, assets and anchors with case sensitivity after moving a page.
 6. Add a logo, screenshot, animation or badge only if it is useful, appropriately
    licensed and accurate. Supply alternate text. Verify light/dark readability;
    keep essential instructions in text. Do not invent a release, passing build,
@@ -48,9 +49,9 @@ manual pages or change the links to the project's actual documentation.
 
 <One sentence explaining what the software does and who it helps.>
 
-[English](Readme.md) · [Deutsch](Readme.de.md) · [Français](Readme.fr.md) ·
-[Русский](Readme.ru.md) · [Español](Readme.es.md) · [Polski](Readme.pl.md) ·
-[Português](Readme.pt.md)
+[English](Readme.md) · [Deutsch](docs/Readme.de.md) · [Français](docs/Readme.fr.md) ·
+[Русский](docs/Readme.ru.md) · [Español](docs/Readme.es.md) · [Polski](docs/Readme.pl.md) ·
+[Português](docs/Readme.pt.md)
 
 **[Download](#download) · [Install](#installation) ·
 [Manual](docs/manual.md) · [Configure](docs/configuration.md) ·

@@ -13,12 +13,14 @@
 | Language | Entry file | Coverage |
 | :--- | :--- | :--- |
 | English | [Readme.md](../Readme.md) | Complete source entry page. |
-| German | [Readme.de.md](../Readme.de.md) | Same onboarding, platform, installation, operations and limitations. |
-| French | [Readme.fr.md](../Readme.fr.md) | Same scope. |
-| Russian | [Readme.ru.md](../Readme.ru.md) | Same scope. |
-| Spanish | [Readme.es.md](../Readme.es.md) | Same scope. |
-| Polish | [Readme.pl.md](../Readme.pl.md) | Same scope. |
-| Portuguese | [Readme.pt.md](../Readme.pt.md) | Same scope. |
+| German | [Readme.de.md](Readme.de.md) | Same onboarding, platform, installation, operations and limitations. |
+| French | [Readme.fr.md](Readme.fr.md) | Same scope. |
+| Russian | [Readme.ru.md](Readme.ru.md) | Same scope. |
+| Spanish | [Readme.es.md](Readme.es.md) | Same scope. |
+| Polish | [Readme.pl.md](Readme.pl.md) | Same scope. |
+| Portuguese | [Readme.pt.md](Readme.pt.md) | Same scope. |
+
+The English entry point is at the repository root. The six translations share the documentation directory and link back to the English entry and to one another.
 
 The detailed handbook is maintained in English and this is disclosed in every README. Technical commands, option names, keys and paths retain their original spelling. Translations were checked for content/command/link parity; no independent native-speaker certification is claimed. Runtime text is still only partially localized.
 
@@ -42,6 +44,16 @@ The tests below run against the source checkout with isolated fixtures. They are
 | Hosted CI | NOT DISPATCHED by this task | Local results do not claim a passing hosted workflow. |
 
 The source tests are intentionally separate from host acceptance. A running service, fresh heartbeat, correct source commit, live prompt and native update behavior must be verified on each intended host before declaring a fleet deployment complete.
+
+## Documentation layout verification
+
+The 2026-11-25 layout change moved the six existing translations to the
+documentation directory and kept the English entry at the root. The offline
+checker verified the seven language selectors, 16 Markdown files, 395 local
+links and three JSON examples. The announcement suite passed 29 tests and the
+portable suite passed 32. Python compilation and Python 3.9 grammar checks
+passed for 25 files, along with both Bash installer syntax checks. This change
+did not run the Windows PowerShell parser or native deployment tests.
 
 ## Maintaining parity
 

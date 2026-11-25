@@ -4,12 +4,12 @@
 
 ## Languages
 
-* [Deutsch](Readme.de.md)
-* [Français](Readme.fr.md)
-* [Русский](Readme.ru.md)
-* [Español](Readme.es.md)
-* [Polski](Readme.pl.md)
-* [Português](Readme.pt.md)
+* [Deutsch](docs/Readme.de.md)
+* [Français](docs/Readme.fr.md)
+* [Русский](docs/Readme.ru.md)
+* [Español](docs/Readme.es.md)
+* [Polski](docs/Readme.pl.md)
+* [Português](docs/Readme.pt.md)
 
 ## Handbook
 
