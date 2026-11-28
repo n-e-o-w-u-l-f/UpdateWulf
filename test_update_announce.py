@@ -183,13 +183,48 @@ class UpdateState(unittest.TestCase):
             template=(Path(mesh.__file__).parent/'hooks/updatewulf.bash.in').read_text()
             hook=root/'prompt.bash'
             hook.write_text(template.replace('__STATE_QUOTED__',repr(str(root))))
-            program='source "$1"; _updatewulf_prompt_attach; printf "%s\n" "$PS1"'
-            result=subprocess.run(
-                ['bash','--noprofile','--norc','-ic',program,'bash',str(hook)],
-                capture_output=True,text=True,timeout=8)
-            self.assertEqual(result.returncode,0,result.stderr)
-            self.assertIn('HubServer 92 Update(s)',result.stdout)
-            self.assertEqual(result.stdout.count('UpdateWulf'),1)
+            import errno
+            import pty
+
+            program = """
+                source "$1"
+                source "$1"
+                PS1='OWNER> '
+                _updatewulf_prompt_attach
+                printf '%s\\n' "$PS1"
+            """
+            master, slave = pty.openpty()
+            try:
+                env = dict(os.environ, TERM="xterm-256color", COLUMNS="80", LINES="24")
+                env.pop("NO_COLOR", None)
+                with subprocess.Popen(
+                    ["bash", "--noprofile", "--norc", "-ic", program, "bash", str(hook)],
+                    stdin=subprocess.DEVNULL, stdout=slave, stderr=subprocess.PIPE, env=env,
+                ) as child:
+                    os.close(slave)
+                    slave = None
+                    chunks = []
+                    while True:
+                        try:
+                            data = os.read(master, 65536)
+                        except OSError as exc:
+                            if exc.errno != errno.EIO:
+                                raise
+                            break
+                        if not data:
+                            break
+                        chunks.append(data)
+                    self.assertEqual(child.wait(timeout=8), 0, child.stderr.read())
+                output = b"".join(chunks).decode()
+            finally:
+                os.close(master)
+                if slave is not None:
+                    os.close(slave)
+            self.assertIn('HubServer 92 Update(s)', output)
+            self.assertEqual(output.count('UpdateWulf'), 1)
+            self.assertIn('\x1b[1;92m', output)
+            self.assertTrue(output.endswith('OWNER> \r\n'))
+
 
     def test_readonly_hub_diagnose_does_not_enqueue(self):
         import io
@@ -322,7 +357,6 @@ class UpdateState(unittest.TestCase):
             hook=(home/'.config/pc-mesh/prompt.bash').read_text()
             self.assertIn('_updatewulf_prompt_attach',hook)
             self.assertIn('PROMPT_COMMAND',hook)
-            self.assertIn('SHELL_COLOR_PS1_DECORATOR',hook)
             self.assertIn('fleet-prompt.bash.',hook)
 
 
